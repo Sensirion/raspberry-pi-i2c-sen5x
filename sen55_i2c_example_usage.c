@@ -1,9 +1,4 @@
 /*
- * I2C-Generator: 0.2.0
- * Yaml Version: 0.5.1
- * Template Version: 0.7.0-8-gbdfd7a4
- */
-/*
  * Copyright (c) 2021, Sensirion AG
  * All rights reserved.
  *
@@ -46,18 +41,19 @@
  * #define printf(...)
  */
 
-// TODO: DRIVER_GENERATOR Add missing commands and make prints more pretty
-
 int main(void) {
     int16_t error = 0;
 
     sensirion_i2c_hal_init();
 
+    error = sen55_device_reset();
+    if (error) {
+        printf("Error executing sen55_device_reset(): %i\n", error);
+    }
+
     unsigned char serial_number[32];
     uint8_t serial_number_size = 32;
-
     error = sen55_get_serial_number(serial_number, serial_number_size);
-
     if (error) {
         printf("Error executing sen55_get_serial_number(): %i\n", error);
     } else {
@@ -66,9 +62,7 @@ int main(void) {
 
     unsigned char product_name[32];
     uint8_t product_name_size = 32;
-
     error = sen55_get_product_name(product_name, product_name_size);
-
     if (error) {
         printf("Error executing sen55_get_product_name(): %i\n", error);
     } else {
@@ -82,37 +76,25 @@ int main(void) {
     uint8_t hardware_minor;
     uint8_t protocol_major;
     uint8_t protocol_minor;
-
     error = sen55_get_version(&firmware_major, &firmware_minor, &firmware_debug,
                               &hardware_major, &hardware_minor, &protocol_major,
                               &protocol_minor);
-
     if (error) {
         printf("Error executing sen55_get_version(): %i\n", error);
     } else {
-        printf("Firmware major: %u\n", firmware_major);
-        printf("Firmware minor: %u\n", firmware_minor);
-        printf("Firmware debug: %i\n", firmware_debug);
-        printf("Hardware major: %u\n", hardware_major);
-        printf("Hardware minor: %u\n", hardware_minor);
-        printf("Protocol major: %u\n", protocol_major);
-        printf("Protocol minor: %u\n", protocol_minor);
+        printf("Firmware: %u.%u, Hardware: %u.%u\n", firmware_major,
+               firmware_minor, hardware_major, hardware_minor);
     }
 
     // Start Measurement
-
     error = sen55_start_measurement();
-
     if (error) {
         printf("Error executing sen55_start_measurement(): %i\n", error);
     }
 
     for (;;) {
         // Read Measurement
-        // TODO: DRIVER_GENERATOR check and update measurement interval
         sensirion_i2c_hal_sleep_usec(1000000);
-        // TODO: DRIVER_GENERATOR Add scaling and offset to printed measurement
-        // values
 
         uint16_t mass_concentration_pm1p0;
         uint16_t mass_concentration_pm2p5;
@@ -131,15 +113,19 @@ int main(void) {
         if (error) {
             printf("Error executing sen55_read_measured_values(): %i\n", error);
         } else {
-            printf("Mass concentration pm1p0: %u\n", mass_concentration_pm1p0);
-            printf("Mass concentration pm2p5: %u\n", mass_concentration_pm2p5);
-            printf("Mass concentration pm4p0: %u\n", mass_concentration_pm4p0);
-            printf("Mass concentration pm10p0: %u\n",
-                   mass_concentration_pm10p0);
-            printf("Ambient humidity: %i\n", ambient_humidity);
-            printf("Ambient temperature: %i\n", ambient_temperature);
-            printf("Voc index: %i\n", voc_index);
-            printf("Nox index: %i\n", nox_index);
+            printf("Mass concentration pm1p0: %.1f µg/m³\n",
+                   mass_concentration_pm1p0 / 10.0f);
+            printf("Mass concentration pm2p5: %.1f µg/m³\n",
+                   mass_concentration_pm2p5 / 10.0f);
+            printf("Mass concentration pm4p0: %.1f µg/m³\n",
+                   mass_concentration_pm4p0 / 10.0f);
+            printf("Mass concentration pm10p0: %.1f µg/m³\n",
+                   mass_concentration_pm10p0 / 10.0f);
+            printf("Ambient humidity: %.1f %%RH\n", ambient_humidity / 100.0f);
+            printf("Ambient temperature: %.1f °C\n",
+                   ambient_temperature / 200.0f);
+            printf("Voc index: %.1f\n", voc_index / 10.0f);
+            printf("Nox index: %.1f\n", nox_index / 10.0f);
         }
     }
 
