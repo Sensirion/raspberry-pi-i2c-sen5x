@@ -54,23 +54,26 @@ Use the following pins to connect your SEN55:
 
       Output:
       ```
-      Serial number: 0CA46464
-      Product name:
-      Firmware: 0.3, Hardware: 3.0
+      Serial number: 213100019
+      Product name: 
+      Firmware: 0.6, Hardware: 4.0
+      Temperature offset: 0
+      Slope: 10000
+      Time constant 10
       Mass concentration pm1p0: 0.0 µg/m³
       Mass concentration pm2p5: 0.0 µg/m³
       Mass concentration pm4p0: 0.0 µg/m³
       Mass concentration pm10p0: 0.0 µg/m³
-      Ambient humidity: 35.1 %RH
-      Ambient temperature: 29.1 °C
+      Ambient humidity: 39.6 %RH
+      Ambient temperature: 28.0 °C
       Voc index: 3276.7
       Nox index: 3276.7
       Mass concentration pm1p0: 0.0 µg/m³
-      Mass concentration pm2p5: 1.4 µg/m³
-      Mass concentration pm4p0: 3.3 µg/m³
-      Mass concentration pm10p0: 3.7 µg/m³
-      Ambient humidity: 35.0 %RH
-      Ambient temperature: 29.1 °C
+      Mass concentration pm2p5: 0.0 µg/m³
+      Mass concentration pm4p0: 0.0 µg/m³
+      Mass concentration pm10p0: 0.0 µg/m³
+      Ambient humidity: 39.2 %RH
+      Ambient temperature: 30.1 °C
       Voc index: 3276.7
       Nox index: 3276.7
       ...
