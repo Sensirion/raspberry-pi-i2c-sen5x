@@ -86,13 +86,35 @@ int main(void) {
                firmware_minor, hardware_major, hardware_minor);
     }
 
+    error = sen55_set_temperature_offset_parameters(0, 10000, 10);
+    if (error) {
+        printf(
+            "Error executing sen55_set_temperature_offset_parameters(): %i\n",
+            error);
+    }
+
+    int16_t temp_offset = 0;
+    int16_t slope = 0;
+    uint16_t time_const = 0;
+    error = sen55_get_temperature_offset_parameters(&temp_offset, &slope,
+                                                    &time_const);
+    if (error) {
+        printf(
+            "Error executing sen55_get_temperature_offset_parameters(): %i\n",
+            error);
+    } else {
+        printf("Temperature offset: %i\n", temp_offset);
+        printf("Slope: %i\n", slope);
+        printf("Time constant %i\n", time_const);
+    }
+
     // Start Measurement
     error = sen55_start_measurement();
     if (error) {
         printf("Error executing sen55_start_measurement(): %i\n", error);
     }
 
-    for (;;) {
+    for (int i = 0; i < 10; i++) {
         // Read Measurement
         sensirion_i2c_hal_sleep_usec(1000000);
 
