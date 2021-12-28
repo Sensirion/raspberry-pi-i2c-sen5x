@@ -4,14 +4,19 @@ This document explains how to set up the Sen5x sensor to run on a Raspberry Pi u
 
 <center><img src="images/SEN5x.png" width="500px"></center>
 
+## Supported sensors
+
+- SEN54 (no NOx signal available)
+- SEN55 (full feature set)
+
 ## Setup Guide
 
 ### Connecting the Sensor
 
 Your sensor has the five different connectors: VCC, GND, SDA, SCL, SEL (the sixth connector will not be used for now).
-Use the following pins to connect your SEN55:
+Use the following pins to connect your SEN5x:
 
- *SEN55*  |    *Raspberry Pi*           |   *Jumper Wire*   |
+ *SEN5x*  |    *Raspberry Pi*           |   *Jumper Wire*   |
  :------: | :-------------------------: | :---------------: |
    VCC    |        Pin 2 (5V)           |   Red             |
    GND    |        Pin 6                |   Black           |
@@ -21,11 +26,11 @@ Use the following pins to connect your SEN55:
 
 <center><img src="images/GPIO-Pinout-Diagram.png" width="900px"></center>
 
-<center><img src="images/SEN55_pinout.png" width="300px"></center>
+<center><img src="images/SEN5X_pinout.png" width="300px"></center>
 
 | *Pin* | *Name* | *Description*                   | *Comments*                       |
 |-------|--------|---------------------------------|----------------------------------|
-| 1     | VDD    | Supply Voltage                  | 5V ±10%
+| 1     | VCC    | Supply Voltage                  | 5V ±10%
 | 2     | GND    | Ground                          |
 | 3     | SDA    | I2C: Serial data input / output | TTL 5V and LVTTL 3.3V compatible
 | 4     | SCL    | I2C: Serial clock input         | TTL 5V and LVTTL 3.3V compatible
@@ -56,28 +61,27 @@ Use the following pins to connect your SEN55:
       ```
       Serial number: 213100019
       Product name: 
-      Firmware: 0.6, Hardware: 4.0
-      Temperature offset: 0
-      Slope: 10000
-      Time constant 10
+      Firmware: 1.0, Hardware: 4.0
       Mass concentration pm1p0: 0.0 µg/m³
       Mass concentration pm2p5: 0.0 µg/m³
       Mass concentration pm4p0: 0.0 µg/m³
       Mass concentration pm10p0: 0.0 µg/m³
       Ambient humidity: 39.6 %RH
       Ambient temperature: 28.0 °C
-      Voc index: 3276.7
-      Nox index: 3276.7
+      Voc index: 0.0
+      Nox index: 0.0
       Mass concentration pm1p0: 0.0 µg/m³
       Mass concentration pm2p5: 0.0 µg/m³
       Mass concentration pm4p0: 0.0 µg/m³
       Mass concentration pm10p0: 0.0 µg/m³
       Ambient humidity: 39.2 %RH
       Ambient temperature: 30.1 °C
-      Voc index: 3276.7
-      Nox index: 3276.7
+      Voc index: 0.0
+      Nox index: 0.0
       ...
       ```
+    
+    - Wait a few minutes until Voc/NOx index values are stable.
 
 ## Troubleshooting
 

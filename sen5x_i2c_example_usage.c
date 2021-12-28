@@ -52,7 +52,6 @@ int main(void) {
     sensirion_i2c_hal_init();
 
     error = sen5x_device_reset();
-
     if (error) {
         printf("Error executing sen5x_device_reset(): %i\n", error);
     }
@@ -60,7 +59,6 @@ int main(void) {
     unsigned char serial_number[32];
     uint8_t serial_number_size = 32;
     error = sen5x_get_serial_number(serial_number, serial_number_size);
-
     if (error) {
         printf("Error executing sen5x_get_serial_number(): %i\n", error);
     } else {
@@ -70,7 +68,6 @@ int main(void) {
     unsigned char product_name[32];
     uint8_t product_name_size = 32;
     error = sen5x_get_product_name(product_name, product_name_size);
-
     if (error) {
         printf("Error executing sen5x_get_product_name(): %i\n", error);
     } else {
@@ -87,7 +84,6 @@ int main(void) {
     error = sen5x_get_version(&firmware_major, &firmware_minor, &firmware_debug,
                               &hardware_major, &hardware_minor, &protocol_major,
                               &protocol_minor);
-
     if (error) {
         printf("Error executing sen5x_get_version(): %i\n", error);
     } else {
@@ -95,26 +91,14 @@ int main(void) {
                firmware_minor, hardware_major, hardware_minor);
     }
 
-    error = sen5x_set_temperature_offset_parameters(0, 10000, 10);
+    // set RHT acceleration mode
+    //  0: Default / Air Purifier / IAQ (slow)
+    //  1: IAQ (fast)
+    //  2: IAQ (medium)
+    error = sen5x_set_rht_acceleration_mode(0);
     if (error) {
-        printf(
-            "Error executing sen5x_set_temperature_offset_parameters(): %i\n",
-            error);
-    }
-
-    int16_t temp_offset = 0;
-    int16_t slope = 0;
-    uint16_t time_const = 0;
-    error = sen5x_get_temperature_offset_parameters(&temp_offset, &slope,
-                                                    &time_const);
-    if (error) {
-        printf(
-            "Error executing sen5x_get_temperature_offset_parameters(): %i\n",
-            error);
-    } else {
-        printf("Temperature offset: %i\n", temp_offset);
-        printf("Slope: %i\n", slope);
-        printf("Time constant %i\n", time_const);
+        printf("Error executing sen5x_set_rht_acceleration_mode(): %i\n",
+               error);
     }
 
     // Start Measurement
@@ -124,7 +108,7 @@ int main(void) {
         printf("Error executing sen5x_start_measurement(): %i\n", error);
     }
 
-    for (int i = 0; i < 60; i++) {
+    for (int i = 0; i < 600; i++) {
         // Read Measurement
         sensirion_i2c_hal_sleep_usec(1000000);
 
@@ -141,7 +125,6 @@ int main(void) {
             &mass_concentration_pm1p0, &mass_concentration_pm2p5,
             &mass_concentration_pm4p0, &mass_concentration_pm10p0,
             &ambient_humidity, &ambient_temperature, &voc_index, &nox_index);
-
         if (error) {
             printf("Error executing sen5x_read_measured_values(): %i\n", error);
         } else {
@@ -157,12 +140,15 @@ int main(void) {
             printf("Ambient temperature: %.1f °C\n",
                    ambient_temperature / 200.0f);
             printf("Voc index: %.1f\n", voc_index / 10.0f);
-            printf("Nox index: %.1f\n", nox_index / 10.0f);
+            if (nox_index == 0x7fff) {
+                printf("Nox index: n/a\n");
+            } else {
+                printf("Nox index: %.1f\n", nox_index / 10.0f);
+            }
         }
     }
 
     error = sen5x_stop_measurement();
-
     if (error) {
         printf("Error executing sen5x_stop_measurement(): %i\n", error);
     }
