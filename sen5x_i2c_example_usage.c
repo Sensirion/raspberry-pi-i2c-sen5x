@@ -1,4 +1,9 @@
 /*
+ * I2C-Generator: 0.3.0
+ * Yaml Version: 2.1.3
+ * Template Version: 0.7.0-109-gb259776
+ */
+/*
  * Copyright (c) 2021, Sensirion AG
  * All rights reserved.
  *
@@ -31,7 +36,7 @@
 
 #include <stdio.h>  // printf
 
-#include "sen55_i2c.h"
+#include "sen5x_i2c.h"
 #include "sensirion_common.h"
 #include "sensirion_i2c_hal.h"
 
@@ -46,25 +51,28 @@ int main(void) {
 
     sensirion_i2c_hal_init();
 
-    error = sen55_device_reset();
+    error = sen5x_device_reset();
+
     if (error) {
-        printf("Error executing sen55_device_reset(): %i\n", error);
+        printf("Error executing sen5x_device_reset(): %i\n", error);
     }
 
     unsigned char serial_number[32];
     uint8_t serial_number_size = 32;
-    error = sen55_get_serial_number(serial_number, serial_number_size);
+    error = sen5x_get_serial_number(serial_number, serial_number_size);
+
     if (error) {
-        printf("Error executing sen55_get_serial_number(): %i\n", error);
+        printf("Error executing sen5x_get_serial_number(): %i\n", error);
     } else {
         printf("Serial number: %s\n", serial_number);
     }
 
     unsigned char product_name[32];
     uint8_t product_name_size = 32;
-    error = sen55_get_product_name(product_name, product_name_size);
+    error = sen5x_get_product_name(product_name, product_name_size);
+
     if (error) {
-        printf("Error executing sen55_get_product_name(): %i\n", error);
+        printf("Error executing sen5x_get_product_name(): %i\n", error);
     } else {
         printf("Product name: %s\n", product_name);
     }
@@ -76,31 +84,32 @@ int main(void) {
     uint8_t hardware_minor;
     uint8_t protocol_major;
     uint8_t protocol_minor;
-    error = sen55_get_version(&firmware_major, &firmware_minor, &firmware_debug,
+    error = sen5x_get_version(&firmware_major, &firmware_minor, &firmware_debug,
                               &hardware_major, &hardware_minor, &protocol_major,
                               &protocol_minor);
+
     if (error) {
-        printf("Error executing sen55_get_version(): %i\n", error);
+        printf("Error executing sen5x_get_version(): %i\n", error);
     } else {
         printf("Firmware: %u.%u, Hardware: %u.%u\n", firmware_major,
                firmware_minor, hardware_major, hardware_minor);
     }
 
-    error = sen55_set_temperature_offset_parameters(0, 10000, 10);
+    error = sen5x_set_temperature_offset_parameters(0, 10000, 10);
     if (error) {
         printf(
-            "Error executing sen55_set_temperature_offset_parameters(): %i\n",
+            "Error executing sen5x_set_temperature_offset_parameters(): %i\n",
             error);
     }
 
     int16_t temp_offset = 0;
     int16_t slope = 0;
     uint16_t time_const = 0;
-    error = sen55_get_temperature_offset_parameters(&temp_offset, &slope,
+    error = sen5x_get_temperature_offset_parameters(&temp_offset, &slope,
                                                     &time_const);
     if (error) {
         printf(
-            "Error executing sen55_get_temperature_offset_parameters(): %i\n",
+            "Error executing sen5x_get_temperature_offset_parameters(): %i\n",
             error);
     } else {
         printf("Temperature offset: %i\n", temp_offset);
@@ -109,12 +118,13 @@ int main(void) {
     }
 
     // Start Measurement
-    error = sen55_start_measurement();
+    error = sen5x_start_measurement();
+
     if (error) {
-        printf("Error executing sen55_start_measurement(): %i\n", error);
+        printf("Error executing sen5x_start_measurement(): %i\n", error);
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 60; i++) {
         // Read Measurement
         sensirion_i2c_hal_sleep_usec(1000000);
 
@@ -127,13 +137,13 @@ int main(void) {
         int16_t voc_index;
         int16_t nox_index;
 
-        error = sen55_read_measured_values(
+        error = sen5x_read_measured_values(
             &mass_concentration_pm1p0, &mass_concentration_pm2p5,
             &mass_concentration_pm4p0, &mass_concentration_pm10p0,
             &ambient_humidity, &ambient_temperature, &voc_index, &nox_index);
 
         if (error) {
-            printf("Error executing sen55_read_measured_values(): %i\n", error);
+            printf("Error executing sen5x_read_measured_values(): %i\n", error);
         } else {
             printf("Mass concentration pm1p0: %.1f µg/m³\n",
                    mass_concentration_pm1p0 / 10.0f);
@@ -151,10 +161,10 @@ int main(void) {
         }
     }
 
-    error = sen55_stop_measurement();
+    error = sen5x_stop_measurement();
 
     if (error) {
-        printf("Error executing sen55_stop_measurement(): %i\n", error);
+        printf("Error executing sen5x_stop_measurement(): %i\n", error);
     }
 
     return 0;
