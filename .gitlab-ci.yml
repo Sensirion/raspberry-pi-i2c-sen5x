@@ -21,7 +21,7 @@ cppcheck:
 build:
   stage: build
   image:
-    name: sensirion/embedded-ci:2.3.0
+    name: sensirion/embedded-ci:2.4.0
   tags: [linux, docker]
   script:
     - make

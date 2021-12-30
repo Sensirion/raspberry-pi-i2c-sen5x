@@ -1,4 +1,3 @@
-/sen55_i2c_example_usage
-/tests/sen55-test-hw_i2c
-/tests/sen55-test-sw_i2c
-.idea
+/sen5x_i2c_example_usage
+/tests/sen5x-test-hw_i2c
+/tests/sen5x-test-sw_i2c
