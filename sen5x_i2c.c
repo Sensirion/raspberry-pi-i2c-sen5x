@@ -40,8 +40,12 @@
 #include "sensirion_common.h"
 #include "sensirion_i2c.h"
 #include "sensirion_i2c_hal.h"
+#include <math.h>  // NAN
 
 #define SEN5X_I2C_ADDRESS 0x69
+
+#define UINT_INVALID 0xFFFF
+#define INT_INVALID 0x7FFF
 
 int16_t sen5x_start_measurement(void) {
     int16_t error;
@@ -106,13 +110,63 @@ int16_t sen5x_read_data_ready(bool* data_ready) {
     return NO_ERROR;
 }
 
-int16_t sen5x_read_measured_values(uint16_t* mass_concentration_pm1p0,
-                                   uint16_t* mass_concentration_pm2p5,
-                                   uint16_t* mass_concentration_pm4p0,
-                                   uint16_t* mass_concentration_pm10p0,
-                                   int16_t* ambient_humidity,
-                                   int16_t* ambient_temperature,
-                                   int16_t* voc_index, int16_t* nox_index) {
+int16_t sen5x_read_measured_values(float* mass_concentration_pm1p0,
+                                   float* mass_concentration_pm2p5,
+                                   float* mass_concentration_pm4p0,
+                                   float* mass_concentration_pm10p0,
+                                   float* ambient_humidity,
+                                   float* ambient_temperature, float* voc_index,
+                                   float* nox_index) {
+    int16_t error;
+
+    uint16_t mass_concentration_pm1p0_int;
+    uint16_t mass_concentration_pm2p5_int;
+    uint16_t mass_concentration_pm4p0_int;
+    uint16_t mass_concentration_pm10p0_int;
+    int16_t ambient_humidity_int;
+    int16_t ambient_temperature_int;
+    int16_t voc_index_int;
+    int16_t nox_index_int;
+
+    error = sen5x_read_measured_values_as_integers(
+        &mass_concentration_pm1p0_int, &mass_concentration_pm2p5_int,
+        &mass_concentration_pm4p0_int, &mass_concentration_pm10p0_int,
+        &ambient_humidity_int, &ambient_temperature_int, &voc_index_int,
+        &nox_index_int);
+
+    if (error) {
+        return error;
+    }
+
+    *mass_concentration_pm1p0 = mass_concentration_pm1p0_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm1p0_int / 10.0f;
+    *mass_concentration_pm2p5 = mass_concentration_pm2p5_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm2p5_int / 10.0f;
+    *mass_concentration_pm4p0 = mass_concentration_pm4p0_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm4p0_int / 10.0f;
+    *mass_concentration_pm10p0 = mass_concentration_pm10p0_int == UINT_INVALID
+                                     ? NAN
+                                     : mass_concentration_pm10p0_int / 10.0f;
+    *ambient_humidity = ambient_humidity_int == INT_INVALID
+                            ? NAN
+                            : ambient_humidity_int / 100.0f;
+    *ambient_temperature = ambient_temperature_int == INT_INVALID
+                               ? NAN
+                               : ambient_temperature_int / 200.0f;
+    *voc_index = voc_index_int == INT_INVALID ? NAN : voc_index_int / 10.0f;
+    *nox_index = nox_index_int == INT_INVALID ? NAN : nox_index_int / 10.0f;
+
+    return NO_ERROR;
+}
+
+int16_t sen5x_read_measured_values_as_integers(
+    uint16_t* mass_concentration_pm1p0, uint16_t* mass_concentration_pm2p5,
+    uint16_t* mass_concentration_pm4p0, uint16_t* mass_concentration_pm10p0,
+    int16_t* ambient_humidity, int16_t* ambient_temperature, int16_t* voc_index,
+    int16_t* nox_index) {
     int16_t error;
     uint8_t buffer[24];
     uint16_t offset = 0;
@@ -167,6 +221,72 @@ int16_t sen5x_read_measured_raw_values(int16_t* raw_humidity,
 }
 
 int16_t sen5x_read_measured_pm_values(
+    float* mass_concentration_pm1p0, float* mass_concentration_pm2p5,
+    float* mass_concentration_pm4p0, float* mass_concentration_pm10p0,
+    float* number_concentration_pm0p5, float* number_concentration_pm1p0,
+    float* number_concentration_pm2p5, float* number_concentration_pm4p0,
+    float* number_concentration_pm10p0, float* typical_particle_size) {
+
+    int16_t error;
+
+    uint16_t mass_concentration_pm1p0_int;
+    uint16_t mass_concentration_pm2p5_int;
+    uint16_t mass_concentration_pm4p0_int;
+    uint16_t mass_concentration_pm10p0_int;
+    uint16_t number_concentration_pm0p5_int;
+    uint16_t number_concentration_pm1p0_int;
+    uint16_t number_concentration_pm2p5_int;
+    uint16_t number_concentration_pm4p0_int;
+    uint16_t number_concentration_pm10p0_int;
+    uint16_t typical_particle_size_int;
+
+    error = sen5x_read_measured_pm_values_as_integers(
+        &mass_concentration_pm1p0_int, &mass_concentration_pm2p5_int,
+        &mass_concentration_pm4p0_int, &mass_concentration_pm10p0_int,
+        &number_concentration_pm0p5_int, &number_concentration_pm1p0_int,
+        &number_concentration_pm2p5_int, &number_concentration_pm4p0_int,
+        &number_concentration_pm10p0_int, &typical_particle_size_int);
+
+    if (error) {
+        return error;
+    }
+
+    *mass_concentration_pm1p0 = mass_concentration_pm1p0_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm1p0_int / 10.0f;
+    *mass_concentration_pm2p5 = mass_concentration_pm2p5_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm2p5_int / 10.0f;
+    *mass_concentration_pm4p0 = mass_concentration_pm4p0_int == UINT_INVALID
+                                    ? NAN
+                                    : mass_concentration_pm4p0_int / 10.0f;
+    *mass_concentration_pm10p0 = mass_concentration_pm10p0_int == UINT_INVALID
+                                     ? NAN
+                                     : mass_concentration_pm10p0_int / 10.0f;
+    *number_concentration_pm0p5 = number_concentration_pm0p5_int == UINT_INVALID
+                                      ? NAN
+                                      : number_concentration_pm0p5_int / 10.0f;
+    *number_concentration_pm1p0 = number_concentration_pm1p0_int == UINT_INVALID
+                                      ? NAN
+                                      : number_concentration_pm1p0_int / 10.0f;
+    *number_concentration_pm2p5 = number_concentration_pm2p5_int == UINT_INVALID
+                                      ? NAN
+                                      : number_concentration_pm2p5_int / 10.0f;
+    *number_concentration_pm4p0 = number_concentration_pm4p0_int == UINT_INVALID
+                                      ? NAN
+                                      : number_concentration_pm4p0_int / 10.0f;
+    *number_concentration_pm10p0 =
+        number_concentration_pm10p0_int == UINT_INVALID
+            ? NAN
+            : number_concentration_pm10p0_int / 10.0f;
+    *typical_particle_size = typical_particle_size_int == UINT_INVALID
+                                 ? NAN
+                                 : typical_particle_size_int / 1000.0f;
+
+    return NO_ERROR;
+}
+
+int16_t sen5x_read_measured_pm_values_as_integers(
     uint16_t* mass_concentration_pm1p0, uint16_t* mass_concentration_pm2p5,
     uint16_t* mass_concentration_pm4p0, uint16_t* mass_concentration_pm10p0,
     uint16_t* number_concentration_pm0p5, uint16_t* number_concentration_pm1p0,

@@ -107,30 +107,85 @@ int16_t sen5x_read_data_ready(bool* data_ready);
 /**
  * sen5x_read_measured_values() - Returns the measured values.
 
-The command 0x0202 \"Read Data Ready\" can be used to check if new
-data is available since the last read operation. If no new data is
-available, the previous values will be returned again. If no data is
-available at all (e.g. measurement not running for at least one
-second), all values will be at their upper limit (0xFFFF for `uint16`,
-0x7FFF for `int16`).
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data is
+ * available at all (e.g. measurement not running for at least one
+ * second), all values will be NAN.
+ *
+ * @param mass_concentration_pm1p0 PM1.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm2p5 PM2.5 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm4p0 PM4.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm10p0 PM10.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param ambient_humidity RH [%]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param ambient_temperature  T [°C]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param voc_index VOC Index
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param nox_index NOx Index
+
+*Note: If this value is unknown, NAN is returned. During
+the first 10..11 seconds after power-on or device reset, this
+value will be NAN as well.*
+ *
+ * @return 0 on success, an error code otherwise
+ */
+int16_t sen5x_read_measured_values(float* mass_concentration_pm1p0,
+                                   float* mass_concentration_pm2p5,
+                                   float* mass_concentration_pm4p0,
+                                   float* mass_concentration_pm10p0,
+                                   float* ambient_humidity,
+                                   float* ambient_temperature, float* voc_index,
+                                   float* nox_index);
+
+/**
+ * sen5x_read_measured_values_as_integers() - Returns the measured values
+without
+ * scaling factors applied.
+
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data is
+ * available at all (e.g. measurement not running for at least one
+ * second), all values will be at their upper limit (0xFFFF for `uint16`,
+ * 0x7FFF for `int16`).
  *
  * @param mass_concentration_pm1p0 Value is scaled with factor 10: PM1.0 [µg/m³]
-= value / 10
+ * = value / 10
 
 *Note: If this value is unknown, 0xFFFF is returned.*
  *
  * @param mass_concentration_pm2p5 Value is scaled with factor 10: PM2.5 [µg/m³]
-= value / 10
+ * = value / 10
 
 *Note: If this value is unknown, 0xFFFF is returned.*
  *
  * @param mass_concentration_pm4p0 Value is scaled with factor 10: PM4.0 [µg/m³]
-= value / 10
+ * = value / 10
 
 *Note: If this value is unknown, 0xFFFF is returned.*
  *
  * @param mass_concentration_pm10p0 Value is scaled with factor 10: PM10.0
-[µg/m³] = value / 10
+ * [µg/m³] = value / 10
 
 *Note: If this value is unknown, 0xFFFF is returned.*
  *
@@ -139,7 +194,7 @@ second), all values will be at their upper limit (0xFFFF for `uint16`,
 *Note: If this value is unknown, 0x7FFF is returned.*
  *
  * @param ambient_temperature Value is scaled with factor 200: T [°C] = value /
-200
+ * 200
 
 *Note: If this value is unknown, 0x7FFF is returned.*
  *
@@ -155,23 +210,21 @@ value will be 0x7FFF as well.*
  *
  * @return 0 on success, an error code otherwise
  */
-int16_t sen5x_read_measured_values(uint16_t* mass_concentration_pm1p0,
-                                   uint16_t* mass_concentration_pm2p5,
-                                   uint16_t* mass_concentration_pm4p0,
-                                   uint16_t* mass_concentration_pm10p0,
-                                   int16_t* ambient_humidity,
-                                   int16_t* ambient_temperature,
-                                   int16_t* voc_index, int16_t* nox_index);
+int16_t sen5x_read_measured_values_as_integers(
+    uint16_t* mass_concentration_pm1p0, uint16_t* mass_concentration_pm2p5,
+    uint16_t* mass_concentration_pm4p0, uint16_t* mass_concentration_pm10p0,
+    int16_t* ambient_humidity, int16_t* ambient_temperature, int16_t* voc_index,
+    int16_t* nox_index);
 
 /**
  * sen5x_read_measured_raw_values() - Returns the measured raw values.
 
-The command 0x0202 \"Read Data Ready\" can be used to check if new
-data is available since the last read operation. If no new data is
-available, the previous values will be returned again. If no data
-is available at all (e.g. measurement not running for at least one
-second), all values will be at their upper limit (0xFFFF for `uint16`,
-0x7FFF for `int16`).
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data
+ * is available at all (e.g. measurement not running for at least one
+ * second), all values will be at their upper limit (0xFFFF for `uint16`,
+ * 0x7FFF for `int16`).
  *
  * @param raw_humidity Value is scaled with factor 100: RH [%] = value / 100
 
@@ -198,8 +251,67 @@ int16_t sen5x_read_measured_raw_values(int16_t* raw_humidity,
                                        uint16_t* raw_voc, uint16_t* raw_nox);
 
 /**
- * sen5x_read_measured_pm_values() - Returns the measured particulate matter
-values.
+ * sen5x_read_measured_pm_values() - Returns the measured particulate
+matter values.
+
+The command 0x0202 \"Read Data Ready\" can be used to check if new
+data is available since the last read operation. If no new data is
+available, the previous values will be returned again. If no data
+is available at all (e.g. measurement not running for at least one
+second), all values will be NAN.
+ *
+ * @param mass_concentration_pm1p0 PM1.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm2p5 PM2.5 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm4p0 PM4.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param mass_concentration_pm10p0 PM10.0 [µg/m³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param number_concentration_pm0p5 PM0.5 [#/cm³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param number_concentration_pm1p0 PM1.0 [#/cm³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param number_concentration_pm2p5 PM2.5 [#/cm³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param number_concentration_pm4p0 PM4.0 [#/cm³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param number_concentration_pm10p0 PM10.0 [#/cm³]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @param typical_particle_size Size [µm]
+
+*Note: If this value is unknown, NAN is returned.*
+ *
+ * @return 0 on success, an error code otherwise
+ */
+int16_t sen5x_read_measured_pm_values(
+    float* mass_concentration_pm1p0, float* mass_concentration_pm2p5,
+    float* mass_concentration_pm4p0, float* mass_concentration_pm10p0,
+    float* number_concentration_pm0p5, float* number_concentration_pm1p0,
+    float* number_concentration_pm2p5, float* number_concentration_pm4p0,
+    float* number_concentration_pm10p0, float* typical_particle_size);
+
+/**
+ * sen5x_read_measured_pm_values_as_integers() - Returns the measured
+particulate matter values without scaling applied.
 
 The command 0x0202 \"Read Data Ready\" can be used to check if new
 data is available since the last read operation. If no new data is
@@ -259,7 +371,7 @@ value / 1000
  *
  * @return 0 on success, an error code otherwise
  */
-int16_t sen5x_read_measured_pm_values(
+int16_t sen5x_read_measured_pm_values_as_integers(
     uint16_t* mass_concentration_pm1p0, uint16_t* mass_concentration_pm2p5,
     uint16_t* mass_concentration_pm4p0, uint16_t* mass_concentration_pm10p0,
     uint16_t* number_concentration_pm0p5, uint16_t* number_concentration_pm1p0,

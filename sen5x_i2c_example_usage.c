@@ -34,6 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <math.h>   // NAN
 #include <stdio.h>  // printf
 
 #include "sen5x_i2c.h"
@@ -112,14 +113,14 @@ int main(void) {
         // Read Measurement
         sensirion_i2c_hal_sleep_usec(1000000);
 
-        uint16_t mass_concentration_pm1p0;
-        uint16_t mass_concentration_pm2p5;
-        uint16_t mass_concentration_pm4p0;
-        uint16_t mass_concentration_pm10p0;
-        int16_t ambient_humidity;
-        int16_t ambient_temperature;
-        int16_t voc_index;
-        int16_t nox_index;
+        float mass_concentration_pm1p0;
+        float mass_concentration_pm2p5;
+        float mass_concentration_pm4p0;
+        float mass_concentration_pm10p0;
+        float ambient_humidity;
+        float ambient_temperature;
+        float voc_index;
+        float nox_index;
 
         error = sen5x_read_measured_values(
             &mass_concentration_pm1p0, &mass_concentration_pm2p5,
@@ -129,22 +130,51 @@ int main(void) {
             printf("Error executing sen5x_read_measured_values(): %i\n", error);
         } else {
             printf("Mass concentration pm1p0: %.1f µg/m³\n",
-                   mass_concentration_pm1p0 / 10.0f);
+                   mass_concentration_pm1p0);
             printf("Mass concentration pm2p5: %.1f µg/m³\n",
-                   mass_concentration_pm2p5 / 10.0f);
+                   mass_concentration_pm2p5);
             printf("Mass concentration pm4p0: %.1f µg/m³\n",
-                   mass_concentration_pm4p0 / 10.0f);
+                   mass_concentration_pm4p0);
             printf("Mass concentration pm10p0: %.1f µg/m³\n",
-                   mass_concentration_pm10p0 / 10.0f);
-            printf("Ambient humidity: %.1f %%RH\n", ambient_humidity / 100.0f);
-            printf("Ambient temperature: %.1f °C\n",
-                   ambient_temperature / 200.0f);
-            printf("Voc index: %.1f\n", voc_index / 10.0f);
-            if (nox_index == 0x7fff) {
+                   mass_concentration_pm10p0);
+            printf("Ambient humidity: %.1f %%RH\n", ambient_humidity);
+            printf("Ambient temperature: %.1f °C\n", ambient_temperature);
+            printf("Voc index: %.1f\n", voc_index);
+            if (isnan(nox_index)) {
                 printf("Nox index: n/a\n");
             } else {
-                printf("Nox index: %.1f\n", nox_index / 10.0f);
+                printf("Nox index: %.1f\n", nox_index);
             }
+        }
+
+        float number_concentration_pm0p5;
+        float number_concentration_pm1p0;
+        float number_concentration_pm2p5;
+        float number_concentration_pm4p0;
+        float number_concentration_pm10p0;
+        float typical_particle_size;
+
+        error = sen5x_read_measured_pm_values(
+            &mass_concentration_pm1p0, &mass_concentration_pm2p5,
+            &mass_concentration_pm4p0, &mass_concentration_pm10p0,
+            &number_concentration_pm0p5, &number_concentration_pm1p0,
+            &number_concentration_pm2p5, &number_concentration_pm4p0,
+            &number_concentration_pm10p0, &typical_particle_size);
+        if (error) {
+            printf("Error executing sen5x_read_measured_pm_values(): %i\n",
+                   error);
+        } else {
+            printf("Number concentration pm0p5: %.1f #/cm³\n",
+                   number_concentration_pm0p5);
+            printf("Number concentration pm0p5: %.1f #/cm³\n",
+                   number_concentration_pm1p0);
+            printf("Number concentration pm0p5: %.1f #/cm³\n",
+                   number_concentration_pm2p5);
+            printf("Number concentration pm0p5: %.1f #/cm³\n",
+                   number_concentration_pm4p0);
+            printf("Number concentration pm0p5: %.1f #/cm³\n",
+                   number_concentration_pm10p0);
+            printf("Typical particle size: %.3f µm\n", typical_particle_size);
         }
     }
 
