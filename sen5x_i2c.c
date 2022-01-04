@@ -340,6 +340,31 @@ int16_t sen5x_start_fan_cleaning(void) {
     return NO_ERROR;
 }
 
+int16_t sen5x_set_temperature_offset_simple(float temp_offset) {
+    int16_t default_slope = 0;
+    uint16_t default_time_constant = 0;
+    int16_t temp_offset_ticks = (int16_t)(temp_offset * 200);
+    return sen5x_set_temperature_offset_parameters(
+        temp_offset_ticks, default_slope, default_time_constant);
+}
+
+int16_t sen5x_get_temperature_offset_simple(float* temp_offset) {
+    int16_t temp_offset_ticks;
+    int16_t slope;
+    uint16_t time_constant;
+    int16_t error = 0;
+
+    error = sen5x_get_temperature_offset_parameters(&temp_offset_ticks, &slope,
+                                                    &time_constant);
+    if (error) {
+        return error;
+    }
+
+    *temp_offset = ((float)temp_offset_ticks) / 200.0f;
+
+    return NO_ERROR;
+}
+
 int16_t sen5x_set_temperature_offset_parameters(int16_t temp_offset,
                                                 int16_t slope,
                                                 uint16_t time_constant) {

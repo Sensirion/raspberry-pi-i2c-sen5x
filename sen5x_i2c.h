@@ -400,6 +400,32 @@ command does nothing.
 int16_t sen5x_start_fan_cleaning(void);
 
 /**
+ * sen5x_set_temperature_offset_simple() - Sets the temperature offset parameter
+ * in degrees celsius for the device, while leaving the other parameters at
+ * their default setting.
+ *
+ * @param temp_offset Constant temperature offset in degrees celsius.
+ * The default value is 0.
+ *
+ * @return 0 on success, an error code otherwise
+ */
+int16_t sen5x_set_temperature_offset_simple(float temp_offset);
+
+/**
+ * sen5x_get_temperature_offset_simple() - Gets the temperature offset parameter
+ * in degrees celsius from the device.
+ *
+ * @note The other parameters, such as slope and time constant may differ
+ * from the default values, if they were previously set using
+ * `setTemperatureOffsetParameters`.
+ *
+ * @param temp_offset Constant temperature offset in degrees celsius.
+ *
+ * @return 0 on success, an error code otherwise
+ */
+int16_t sen5x_get_temperature_offset_simple(float* temp_offset);
+
+/**
  * sen5x_set_temperature_offset_parameters() - Sets the temperature offset
  * parameters for the device.
  *
