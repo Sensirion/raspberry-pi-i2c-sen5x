@@ -92,14 +92,30 @@ int main(void) {
                firmware_minor, hardware_major, hardware_minor);
     }
 
-    // set RHT acceleration mode
-    //  0: Default / Air Purifier / IAQ (slow)
-    //  1: IAQ (fast)
-    //  2: IAQ (medium)
-    error = sen5x_set_rht_acceleration_mode(0);
+    // set a temperature offset in degrees celsius
+    // By default, the temperature and humidity outputs from the sensor
+    // are compensated for the modules self-heating. If the module is
+    // designed into a device, the temperature compensation might need
+    // to be adapted to incorporate the change in thermal coupling and
+    // self-heating of other device components.
+    //
+    // A guide to achieve optimal performance, including references
+    // to mechanical design-in examples can be found in the app note
+    // “SEN5x – Temperature Compensation Instruction” at www.sensirion.com.
+    // Please refer to those application notes for further information
+    // on the advanced compensation settings used in
+    // `sen5x_set_temperature_offset_parameters`,
+    // `sen5x_set_warm_start_parameter` and `sen5x_set_rht_acceleration_mode`.
+    //
+    // Adjust temp_offset to account for additional temperature offsets
+    // exceeding the SEN module's self heating.
+    float temp_offset = 0.0f;
+    error = sen5x_set_temperature_offset_simple(temp_offset);
     if (error) {
-        printf("Error executing sen5x_set_rht_acceleration_mode(): %i\n",
+        printf("Error executing sen5x_set_temperature_offset_simple(): %i\n",
                error);
+    } else {
+        printf("Temperature Offset set to %.2f °C\n", temp_offset);
     }
 
     // Start Measurement
@@ -145,36 +161,6 @@ int main(void) {
             } else {
                 printf("Nox index: %.1f\n", nox_index);
             }
-        }
-
-        float number_concentration_pm0p5;
-        float number_concentration_pm1p0;
-        float number_concentration_pm2p5;
-        float number_concentration_pm4p0;
-        float number_concentration_pm10p0;
-        float typical_particle_size;
-
-        error = sen5x_read_measured_pm_values(
-            &mass_concentration_pm1p0, &mass_concentration_pm2p5,
-            &mass_concentration_pm4p0, &mass_concentration_pm10p0,
-            &number_concentration_pm0p5, &number_concentration_pm1p0,
-            &number_concentration_pm2p5, &number_concentration_pm4p0,
-            &number_concentration_pm10p0, &typical_particle_size);
-        if (error) {
-            printf("Error executing sen5x_read_measured_pm_values(): %i\n",
-                   error);
-        } else {
-            printf("Number concentration pm0p5: %.1f #/cm³\n",
-                   number_concentration_pm0p5);
-            printf("Number concentration pm0p5: %.1f #/cm³\n",
-                   number_concentration_pm1p0);
-            printf("Number concentration pm0p5: %.1f #/cm³\n",
-                   number_concentration_pm2p5);
-            printf("Number concentration pm0p5: %.1f #/cm³\n",
-                   number_concentration_pm4p0);
-            printf("Number concentration pm0p5: %.1f #/cm³\n",
-                   number_concentration_pm10p0);
-            printf("Typical particle size: %.3f µm\n", typical_particle_size);
         }
     }
 
