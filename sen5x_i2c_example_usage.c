@@ -93,6 +93,7 @@ int main(void) {
     }
 
     // set a temperature offset in degrees celsius
+    // Note: supported by SEN54 and SEN55 sensors
     // By default, the temperature and humidity outputs from the sensor
     // are compensated for the modules self-heating. If the module is
     // designed into a device, the temperature compensation might need
@@ -115,7 +116,8 @@ int main(void) {
         printf("Error executing sen5x_set_temperature_offset_simple(): %i\n",
                error);
     } else {
-        printf("Temperature Offset set to %.2f °C\n", temp_offset);
+        printf("Temperature Offset set to %.2f °C (SEN54/SEN55 only)\n",
+               temp_offset);
     }
 
     // Start Measurement
@@ -153,9 +155,21 @@ int main(void) {
                    mass_concentration_pm4p0);
             printf("Mass concentration pm10p0: %.1f µg/m³\n",
                    mass_concentration_pm10p0);
-            printf("Ambient humidity: %.1f %%RH\n", ambient_humidity);
-            printf("Ambient temperature: %.1f °C\n", ambient_temperature);
-            printf("Voc index: %.1f\n", voc_index);
+            if (isnan(ambient_humidity)) {
+                printf("Ambient humidity: n/a\n");
+            } else {
+                printf("Ambient humidity: %.1f %%RH\n", ambient_humidity);
+            }
+            if (isnan(ambient_temperature)) {
+                printf("Ambient temperature: n/a\n");
+            } else {
+                printf("Ambient temperature: %.1f °C\n", ambient_temperature);
+            }
+            if (isnan(voc_index)) {
+                printf("Voc index: n/a\n");
+            } else {
+                printf("Voc index: %.1f\n", voc_index);
+            }
             if (isnan(nox_index)) {
                 printf("Nox index: n/a\n");
             } else {
