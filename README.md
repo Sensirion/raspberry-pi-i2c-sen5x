@@ -6,6 +6,7 @@ This document explains how to set up the Sen5x sensor to run on a Raspberry Pi u
 
 ## Supported sensors
 
+- SEN50 (only particulate matter signals available)
 - SEN54 (no NOx signal available)
 - SEN55 (full feature set)
 

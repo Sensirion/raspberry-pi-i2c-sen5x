@@ -220,6 +220,25 @@ int16_t sen5x_read_measured_raw_values(int16_t* raw_humidity,
     return NO_ERROR;
 }
 
+int16_t sen5x_read_measured_values_sen50(float* mass_concentration_pm1p0,
+                                         float* mass_concentration_pm2p5,
+                                         float* mass_concentration_pm4p0,
+                                         float* mass_concentration_pm10p0) {
+    int16_t error;
+    float ambient_humidity_dummy;
+    float ambient_temperature_dummy;
+    float voc_index_dummy;
+    float nox_index_dummy;
+
+    error = sen5x_read_measured_values(
+        mass_concentration_pm1p0, mass_concentration_pm2p5,
+        mass_concentration_pm4p0, mass_concentration_pm10p0,
+        &ambient_humidity_dummy, &ambient_temperature_dummy, &voc_index_dummy,
+        &nox_index_dummy);
+
+    return error;
+}
+
 int16_t sen5x_read_measured_pm_values(
     float* mass_concentration_pm1p0, float* mass_concentration_pm2p5,
     float* mass_concentration_pm4p0, float* mass_concentration_pm10p0,
