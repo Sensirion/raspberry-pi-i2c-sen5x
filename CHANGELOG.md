@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.2.0] - 2022-03-30
+
 Add support for SEN50
 
 
@@ -14,5 +17,6 @@ Add support for SEN50
 
 Initial release
 
+[0.2.0]: https://github.com/Sensirion/raspberry-pi-i2c-sen5x/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/Sensirion/raspberry-pi-i2c-sen5x/releases/tag/0.1.0
 
