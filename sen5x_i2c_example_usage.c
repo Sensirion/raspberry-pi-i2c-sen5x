@@ -47,10 +47,16 @@
  * #define printf(...)
  */
 
+/**
+ * Linux specific configuration. Adjust the following define to the device path
+ * of your sensor.
+ */
+#define I2C_DEVICE_PATH "/dev/i2c-1"
+
 int main(void) {
     int16_t error = 0;
 
-    sensirion_i2c_hal_init();
+    sensirion_i2c_hal_init(I2C_DEVICE_PATH);
 
     error = sen5x_device_reset();
     if (error) {
